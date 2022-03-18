@@ -1,0 +1,8 @@
+[{"name":"resourcePath","value":"/com/oldguy/jillcess/configuration/"},
+{"name":"timeZone","value":""},
+{"name":"charset","value":"US-ASCII"},
+{"name":"brokenNio","value":"false"},
+{"name":"columnOrder","value":""},
+{"name":"enforceForeignKeys","value":"true"},
+{"name":"allowAutoNumberInsert","value":"true"},
+{"name":"enableExpressionEvaluation","value":"false"}]

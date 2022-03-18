@@ -1,0 +1,9 @@
+/local.properties
+/.gradle/
+/.idea/
+/build/
+/KmpJillcess/build/
+/KmpJillcess/.gradle/
+*.iml
+/KmpJillcess/local.properties
+/KmpJillcess/TestFiles/Work/
