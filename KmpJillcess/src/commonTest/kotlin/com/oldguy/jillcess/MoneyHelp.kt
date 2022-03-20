@@ -179,10 +179,10 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
             "ADDR",
             "ADV",
             "ADV_SUM",
-            "Advisor Important Dates Custom Pool",
-            "Asset Allocation Custom Pool",
             "AUTO",
             "AWD",
+            "Advisor Important Dates Custom Pool",
+            "Asset Allocation Custom Pool",
             "BGT",
             "BGT_BKT",
             "BGT_ITM",
@@ -198,9 +198,9 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
             "DHD",
             "FI",
             "Goal Custom Pool",
-            "Inventory Custom Pool",
             "ITM",
             "IVTY",
+            "Inventory Custom Pool",
             "LOT",
             "LSTEP",
             "MAIL",
@@ -209,12 +209,12 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
             "PGM",
             "PMT",
             "PORT_REC",
-            "Portfolio View Custom Pool",
             "POS_STMT",
             "PRODUCT",
             "PROJ",
             "PROV_FI",
             "PROV_FI_PAY",
+            "Portfolio View Custom Pool",
             "Report Custom Pool",
             "SAV_GOAL",
             "SEC",
@@ -224,7 +224,6 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
             "SP",
             "STMT",
             "SVC",
-            "Tax Rate Custom Pool",
             "TAXLINE",
             "TMI",
             "TRIP",
@@ -235,6 +234,7 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
             "TRN_SPLIT",
             "TRN_XFER",
             "TXSRC",
+            "Tax Rate Custom Pool",
             "VIEW",
             "Worksheet Custom Pool",
             "XACCT",
@@ -243,9 +243,7 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
             "XPAY"
         )
 
-        fun tableNames2002(): List<String> {
-            val list = tableNames2001.toMutableList()
-            list.addAll(
+        fun tableNames2002(): List<String> = (tableNames2001 +
                 listOf(
                     "BILL",
                     "BILL_FLD",
@@ -268,14 +266,10 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
                     "UNOTE",
                     "XBAG"
                 )
-            )
-            list.sort()
-            return list.toList()
-        }
+            ).sorted()
 
-        fun tableNames2008(): List<String> {
-            val list = tableNames2001.toMutableList()
-            list.addAll(
+        fun tableNames2008(): List<String> = (
+                tableNames2001.filterNot { it == "Goal Custom Pool" }  +
                 listOf(
                     "BILL",
                     "BILL_FLD",
@@ -296,10 +290,7 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
                     "XMAPSEC",
                     "XSYNCCHUNK"
                 )
-            )
-            list.remove("Goal Custom Pool")
-            list.sort()
-            return list.toList()
-        }
+            ).sorted()
+
     }
 }

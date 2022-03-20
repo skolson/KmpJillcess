@@ -268,7 +268,8 @@ class OfficeRC4Codec constructor(
         baseHash = digest.hash(officeEncryption.salt.toUByteArray(), passwordBytes.toUByteArray())
 
         /*
-        Decrypt verifier bytes, decrypt verifier hash bytes, calculate hash on the verifier bytes and
+        Decrypt verifier bytes and verifier hash bytes, calculate hash on the verifier bytes and
+        compare for equality.
          */
         if (!noEncryption) {
             cipher = Cipher.build {
@@ -277,16 +278,21 @@ class OfficeRC4Codec constructor(
                     key = computeKey(UByteArray(4), 0)
                 }
             }
-            val decryptedVerifier = cipher.processOne(false, UByteBuffer(officeEncryption.verifier.toUByteArray()))
-            val decryptedHash = cipher.processOne(false, UByteBuffer(officeEncryption.verifierHash.toUByteArray()))
+            val decrypted: UByteBuffer
+            UByteBuffer(officeEncryption.verifier.size + officeEncryption.verifierHash.size).apply {
+                put(officeEncryption.verifier)
+                put(officeEncryption.verifierHash)
+                flip()
+                decrypted = cipher.processOne(false, this)
+            }
+            val decryptedVerifier = decrypted.getBytes(officeEncryption.verifier.size)
+            val decryptedHash = decrypted.getBytes()
             val testHash = digest.hash(
-                decryptedVerifier.contentBytes.toUByteArray(),
+                decryptedVerifier,
                 UByteArray(0),
                 officeEncryption.verifierHashSize
             )
-            val hashBytes = decryptedHash.contentBytes.copyOf(officeEncryption.verifierHashSize)
-            val testBytes = testHash.copyOf(officeEncryption.verifierHashSize)
-            if (!hashBytes.contentEquals(testBytes))
+            if (!decryptedHash.contentEquals(testHash))
                 throw IllegalArgumentException(passwordErrorText)
         }
         digest.reset()

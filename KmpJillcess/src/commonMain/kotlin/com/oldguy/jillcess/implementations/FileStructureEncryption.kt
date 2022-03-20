@@ -230,10 +230,10 @@ sealed class DatabaseEncryptionStructure(val bytes: UByteBuffer, val jet: Jet) {
             private set
         lateinit var cspName: String
             private set
-        val salt = ByteArray(16)
-        val verifier = ByteArray(16)
+        val salt = UByteArray(16)
+        val verifier = UByteArray(16)
         var verifierHashSize: Int = 0
-        lateinit var verifierHash: ByteArray
+        var verifierHash = UByteArray(0)
         lateinit var agileXmlBytes: ByteArray
         lateinit var agileXml: String
 
@@ -360,12 +360,11 @@ sealed class DatabaseEncryptionStructure(val bytes: UByteBuffer, val jet: Jet) {
             if (saltSize != 16)
                 throw IllegalStateException("Salt size: $saltSize, only 16 supported")
 
-            providerMetadata.toByteBuffer().apply {
+            providerMetadata.apply {
                 getBytes(salt)
                 getBytes(verifier)
                 verifierHashSize = int
-                verifierHash = ByteArray(algorithm.verifierHashLength)
-                getBytes(verifierHash)
+                verifierHash = getBytes(algorithm.verifierHashLength)
             }
         }
 
