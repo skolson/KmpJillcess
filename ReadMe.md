@@ -14,18 +14,23 @@ This Repo is a Kotlin multiplatform (KMP) library that provides a simple databas
 
 This library was fun to make and taught me more than I ever wanted to know about MS Access files.  The original requirement causing it's birth was to convert an old but large Microsoft Money file to Sqlite/Sqlcipher.  An API similar to the one used in the SqlEncrypt repo for Sqlite/SqlCipher was used to make the access tables, column metadata, index metadata, and other MS Access artifacts accessible to a KMP program with type saftey on all supported column types. Access files were designed I think sometime in the 80s, when storage and memory were both expensive. So it is crawling with bit masks, bitmap index structures, condensed encodings, and all the other artifacts you can imagine a C programmer might come up with back in the day to save money on memory and hard storage. The files formats changed some between the Jet3 and the Jet4 versions, both of which this library supports, but the basic architecture stayed the same.  The file is organized into pages of fixed size. Page Zero is full of metadata about the rest of the file. All the other pages have a specific page type of which there are a small number.  Each page type has its own organization.  Its WAY out of the scope of this readme to go into all the details.
 
-I think 100 percent of the code required in this library is Kotlin, with no requirement for expect/actual classes with platform-specific code. It does use two libraries that do have platform-specific code. See the dependencies below.
+Almost all of the code required in this library is Kotlin, with very little usage of expect/actual classes with platform-specific code. The exceptions to this are:
+
+- XML parsing. Later versions of Access actually have an encryption-related XML snippet in page zero that must be parsed.  Android, JVM targets use the old-but-good java XML Pull parser. Apple platforms use Apple's XML pull parser.
+- Dependency on kmp-io for platform-specific file operations.
+- Dependency on kmp-crypto, which has platform-specific implementations of SecureRandom.
 
 Access does some stuff this library doesn't support. But it does handle the basic column types:
 
 - Character/Text mapped to String
 - Boolean
+- byte types mapped to Byte
 - short types mapped to Short
 - integer types mapped to Int
 - long types mapped to Long
 - decimal types mapped to BigDecimal from the KMP library Bignum from Ionspin
 - date and datetime types mapped to the Klock library
-- Blob and Clob columns maped to ByteArray
+- Blob and Clob columns mapped to ByteArray
 
 Various versions of Access have encryption abilities with various engines, salts, key schemes that change by page number, and other techniques that have morphed over the years, of which this library supports most.
 
@@ -50,8 +55,8 @@ Various versions of Access have encryption abilities with various engines, salts
 
 #### Dependencies
 
-- KmpIO (kmp-io 0.1.2) repo is used for all file IO - The random access RawFile, ByteBuffer, BitSet and other classes are used extensively.
-- KmpCrypto (kmp-crypto) is used for the cryptography schemes the various releases of Access have used over the years.
+- KmpIO (kmp-io 0.1.2) repo is used for all file IO - The random access RawFile, ByteBuffer classes are used extensively. Also BitSet and Base64.
+- KmpCrypto (kmp-crypto) is used for the cryptography schemes the various releases of Access have used over the years. (RC4, AES, various Hash algorithms, etc)
 
 #### SourceSets
 
@@ -100,7 +105,9 @@ Since everything in Access involves Random Access file IO, use something like Di
 
 # Example Usage
 
-This example opens an encrypted MS Money database using a password, then read rows from the currency table ("CRNC"). The exmple if for the 2008 version, which added a few ne columns to this table.
+This example opens an encrypted MS Money database using a password, then read rows from the currency table ("CRNC"). The example if for the 2008 version, which added a few new columns to this table.
+
+One pain point on usage requires loading of four resource text files that have character set mapping data used in index encodings. Index encodings in Access are impressively complex. Anyway, these resource files and a small JSON properties file must be available in one resource directory. In Android they can be packaged as standard asset files and accessed via the AssetManager support. A similar packaging approach is necessary for IOS. The files in this repo are packaged in the `resources` subdirectory.
 
 ```
     suspend fun readCurrencyExample() {

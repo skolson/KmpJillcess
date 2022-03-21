@@ -143,6 +143,7 @@ enum class EncodingType(val prefixCode: String) {
             // stripped a leading 0
             work = "0$work"
         }
+        //println("codes: $codes, work: $work, workLength: ${work.length}")
         val bytes = ByteArray(work.length / 2)
         for (i in bytes.indices) {
             val charIdx = i * 2

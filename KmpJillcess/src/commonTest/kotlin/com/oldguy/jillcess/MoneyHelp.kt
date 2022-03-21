@@ -22,18 +22,24 @@ open class DatabaseTestBaseHelp(
         private set
     var openException: Throwable? = null
 
-    fun testDirectory(): File {
+    private fun resourceDirectory(): File {
+        return File(resourcePath).apply {
+            if (!exists) throw IllegalStateException("Can't find resources: $resourcePath")
+        }
+    }
+
+    private fun testDirectory(): File {
         return File(path).apply {
             if (!exists) throw IllegalStateException("Can't find TestFiles: $path")
         }
     }
 
-    suspend fun workDirectory() = testDirectory().resolve(work)
+    private suspend fun workDirectory() = testDirectory().resolve(work)
 
     suspend fun setup() {
         db = AccessDatabase(
             "$path$subDir$pathSeparator$databaseName",
-            JsonConfiguration.build(testDirectory()),
+            JsonConfiguration.build(resourceDirectory()),
             DatabaseFile.Mode.Read,
             password
         )
@@ -45,7 +51,8 @@ open class DatabaseTestBaseHelp(
     }
 
     companion object {
-        val pathSeparator = "/"
+        const val pathSeparator = "/"
+        const val resourcePath = "resources"
         const val path = "TestFiles"
         const val work = "Work"
         const val wrongPassword = Codec.passwordErrorText

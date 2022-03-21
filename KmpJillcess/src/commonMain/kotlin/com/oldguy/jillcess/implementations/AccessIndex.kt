@@ -6,6 +6,7 @@ import com.oldguy.jillcess.Index
 import com.oldguy.jillcess.configuration.Configuration
 import kotlin.experimental.inv
 import kotlin.experimental.or
+import kotlinx.atomicfu.*
 
 class AccessIndexColumn(
     name: String,
@@ -182,8 +183,10 @@ class AccessIndex(private val accessTable: AccessTable, indexStruct: AllIndexStr
         val unprintableCodes = mutableListOf<Byte>()
         val crazyCodes = mutableListOf<Byte>()
         var stats = ExtraCodesStats()
+        val ic = indexCodes.value
+            ?: throw IllegalArgumentException("Index codes must be loaded before use")
         for (element in str) {
-            val charHandler = indexCodes.getCharHandler(element)
+            val charHandler = ic.getCharHandler(element)
             val curCharOffset = charOffset
             var bytes = charHandler.inlineBytes
             if (bytes.isNotEmpty()) {
@@ -419,7 +422,7 @@ class AccessIndex(private val accessTable: AccessTable, indexStruct: AllIndexStr
     }
 
     companion object {
-        private lateinit var indexCodes: IndexCodes
+        private val indexCodes = atomic<IndexCodes?>(null)
         private val firstChar = 0u
         private val lastChar = 255u
         private val firstExtChar = 256u
@@ -429,7 +432,7 @@ class AccessIndex(private val accessTable: AccessTable, indexStruct: AllIndexStr
             version: Jet.Version,
             configuration: Configuration
         ) {
-            indexCodes = IndexCodes(
+            val ic = IndexCodes(
                 when (version) {
                     Jet.Version.Access97, Jet.Version.Access2000_2002_2003, Jet.Version.Access2007 ->
                         loadCodes(configuration.indexCodeGeneralLegacy(), firstChar, lastChar)
@@ -447,6 +450,7 @@ class AccessIndex(private val accessTable: AccessTable, indexStruct: AllIndexStr
                         loadCodes(configuration.indexCodeGeneralExtra(), firstExtChar, lastExtChar)
                 }
             )
+            indexCodes.value = ic
         }
 
         private suspend fun loadCodes(
@@ -466,7 +470,7 @@ class AccessIndex(private val accessTable: AccessTable, indexStruct: AllIndexStr
                     // surrogate chars are not included in the codes files
                     SurrogateCharHandler()
                 } else {
-                    val codeLine = codesFile.readLine()
+                    val codeLine = codesFile.readLine().trimEnd()
                     parseCodes(prefixMap, codeLine)
                 }
                 values[(i - firstChar).toInt()] = ch

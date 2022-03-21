@@ -1,8 +1,6 @@
 package com.oldguy.jillcess
 
 import com.oldguy.common.io.Base64
-import com.oldguy.common.io.Charset
-import com.oldguy.common.io.Charsets
 import com.oldguy.jillcess.cryptography.CTEncryption
 import com.oldguy.jillcess.cryptography.CTKeyEncryptor
 import kotlinx.cinterop.memScoped
@@ -35,7 +33,6 @@ class OfficeAgileAppleParser {
         var elementName = ""
         val rootName = "encryption"
         var encryptorListIndex = -1
-        val charset = Charset(Charsets.Utf8)
 
         override fun parser(
             parser: NSXMLParser,
@@ -64,7 +61,8 @@ class OfficeAgileAppleParser {
                             "cipherAlgorithm" -> result.keyData.cipherAlgorithm = value
                             "cipherChaining" -> result.keyData.cipherChaining = value
                             "hashAlgorithm" -> result.keyData.hashAlgorithm = value
-                            "saltValue" -> result.keyData.saltValue = Base64.decodeToBytes(charset.encode(value))
+                            "saltValue" ->
+                                result.keyData.saltValue = Base64.decodeToBytes(value)
                         }
                     }
                 }
@@ -76,17 +74,19 @@ class OfficeAgileAppleParser {
                             ?: throw IllegalStateException("Bug: no key $it found in attributes map: $attrs")
                         when (it) {
                             "encryptedHmacKey" -> result.dataIntegrity.encryptedHmacKey =
-                                Base64.decodeToBytes(charset.encode(value))
+                                Base64.decodeToBytes(value)
                             "encryptedHmacValue" -> result.dataIntegrity.encryptedHmacValue =
-                                Base64.decodeToBytes(charset.encode(value))
+                                Base64.decodeToBytes(value)
                         }
                     }
                 }
+                "keyEncryptors" -> {}
                 "keyEncryptor" -> {
                     if (elementStack.first() != "keyEncryptors")
                         throw IllegalStateException("dataIntegrity tag should only be part of keyEncryptors, not: ${elementStack.first()}")
                     val uri = attrs["uri"] ?: ""
                     result.keyEncryptors.encryptorList.add(CTKeyEncryptor(uri))
+                    encryptorListIndex++
                 }
                 "p:encryptedKey" -> {
                     if (elementStack.first() != "keyEncryptor")
@@ -105,14 +105,14 @@ class OfficeAgileAppleParser {
                             "cipherChaining" -> key.cipherChaining = value
                             "hashAlgorithm" -> key.hashAlgorithm = value
                             "saltValue" -> key.saltValue =
-                                Base64.decodeToBytes(charset.encode(value)).toUByteArray()
+                                Base64.decodeToBytes(value).toUByteArray()
                             "spinCount" -> key.spinCount = value.toInt()
                             "encryptedVerifierHashInput" -> key.encryptedVerifierHashInput =
-                                Base64.decodeToBytes(charset.encode(value)).toUByteArray()
+                                Base64.decodeToBytes(value).toUByteArray()
                             "encryptedVerifierHashValue" -> key.encryptedVerifierHashValue =
-                                Base64.decodeToBytes(charset.encode(value)).toUByteArray()
+                                Base64.decodeToBytes(value).toUByteArray()
                             "encryptedKeyValue" -> key.encryptedKeyValue =
-                                Base64.decodeToBytes(charset.encode(value)).toUByteArray()
+                                Base64.decodeToBytes(value).toUByteArray()
                         }
                     }
                 }
