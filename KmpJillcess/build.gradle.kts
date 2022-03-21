@@ -30,7 +30,7 @@ val javadocTaskName = "javadocJar"
 
 android {
     compileSdk = androidTargetSdkVersion
-    buildToolsVersion = "33.0.0-rc1"
+    buildToolsVersion = "33.0.0-rc2"
 
     sourceSets {
         getByName("main") {
@@ -50,7 +50,7 @@ android {
         targetSdk = androidTargetSdkVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("tools/proguard-rules.pro")
+        consumerProguardFiles("tools/consumer-rules.pro")
     }
 
     buildTypes {
