@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.20"
     kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
@@ -18,12 +18,15 @@ plugins {
 val mavenArtifactId = "kmp-jillcess"
 val appleFrameworkName = "KmpJillcess"
 group = "com.oldguy"
-version = "0.1.0"
+version = "0.1.1"
 
 val androidMinSdk = 26
 val androidTargetSdkVersion = 32
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.jillcess"
+
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1"
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val javadocTaskName = "javadocJar"
@@ -95,7 +98,6 @@ tasks {
 val junitVersion = "5.8.2"
 val junit5 = "org.junit.jupiter:junit-jupiter-api:$junitVersion"
 val junit5Runtime = "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
 kotlin {
     android {
@@ -158,18 +160,18 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+                implementation(kotlinCoroutines)
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-                implementation("com.oldguy:kmp-io:0.1.2")
-                implementation("com.oldguy:kmp-crypto:0.1.2")
-                implementation("com.soywiz.korlibs.klock:klock:2.5.3")
+                implementation("com.oldguy:kmp-io:0.1.3")
+                implementation("com.oldguy:kmp-crypto:0.1.3")
+                implementation("com.soywiz.korlibs.klock:klock:2.7.0")
                 implementation("com.ionspin.kotlin:bignum:0.3.4")
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+                implementation(kotlinCoroutinesTest)
             }
         }
         val androidMain by getting {
@@ -198,7 +200,7 @@ kotlin {
             dependsOn(commonTest)
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+                implementation(kotlinCoroutinesTest)
             }
         }
         val iosX64Main by getting {
