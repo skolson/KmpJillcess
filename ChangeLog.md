@@ -2,7 +2,7 @@
 
 ### 0.1.1 (in progress)
 
-- Kotlin 1.6.20
+- Kotlin 1.6.21
 - Gradle 7.4.2
 
 ### 0.1.0 (2022-03)
