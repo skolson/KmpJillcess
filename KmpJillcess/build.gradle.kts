@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("plugin.serialization") version "1.7.10"
     kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.6.10"
+    id("org.jetbrains.dokka") version "1.7.10"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -25,15 +25,16 @@ val androidTargetSdkVersion = 32
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.jillcess"
 
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
-val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1"
+val kotlinCoroutinesVersion = "1.6.4"
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val javadocTaskName = "javadocJar"
 
 android {
     compileSdk = androidTargetSdkVersion
-    buildToolsVersion = "33.0.0-rc2"
+    buildToolsVersion = "33.0.0"
 
     sourceSets {
         getByName("main") {
@@ -161,11 +162,11 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlinCoroutines)
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
                 implementation("com.oldguy:kmp-io:0.1.3")
                 implementation("com.oldguy:kmp-crypto:0.1.3")
                 implementation("com.soywiz.korlibs.klock:klock:2.7.0")
-                implementation("com.ionspin.kotlin:bignum:0.3.4")
+                implementation("com.ionspin.kotlin:bignum:0.3.6")
             }
         }
         val commonTest by getting {
