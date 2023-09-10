@@ -2,7 +2,7 @@ package com.oldguy.jillcess.implementations
 
 import com.oldguy.common.io.ByteBuffer
 import com.oldguy.common.io.UByteBuffer
-import com.soywiz.klock.DateTime
+import korlibs.time.DateTime
 import kotlin.experimental.xor
 
 /**

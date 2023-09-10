@@ -1,8 +1,8 @@
 package com.oldguy.jillcess
 
-import com.soywiz.klock.DateFormat
-import com.soywiz.klock.KlockLocale
-import com.soywiz.klock.PatternDateFormat
+import korlibs.time.DateFormat
+import korlibs.time.KlockLocale
+import korlibs.time.PatternDateFormat
 
 /**
  * Patterns and other stuff related to date to string handling, most likely to change when kotlin

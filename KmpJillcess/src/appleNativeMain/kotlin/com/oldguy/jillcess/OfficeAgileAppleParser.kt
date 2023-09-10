@@ -3,15 +3,18 @@ package com.oldguy.jillcess
 import com.oldguy.common.io.Base64
 import com.oldguy.jillcess.cryptography.CTEncryption
 import com.oldguy.jillcess.cryptography.CTKeyEncryptor
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
 import platform.Foundation.*
 import platform.darwin.NSObject
 
+@OptIn(ExperimentalForeignApi::class)
 class OfficeAgileAppleParser {
 
     fun parseXml(xml: String): CTEncryption {
         var result = CTEncryption()
         memScoped {
+            @Suppress("CAST_NEVER_SUCCEEDS")
             NSXMLParser((xml as NSString).dataUsingEncoding(NSUTF8StringEncoding)!!).apply {
                 delegate = CtEncryptParser {
                     result = it

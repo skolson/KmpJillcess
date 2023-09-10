@@ -1,7 +1,7 @@
 package com.oldguy.jillcess
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.soywiz.klock.DateTime
+import korlibs.time.DateTime
 
 enum class ColumnType { String, Byte, Short, Int, Long, Float, Double, Decimal, DateTime, Boolean, Blob, Clob }
 

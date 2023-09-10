@@ -7,8 +7,8 @@ import com.oldguy.jillcess.configuration.JsonConfiguration
 import com.oldguy.jillcess.cryptography.Codec
 import com.oldguy.jillcess.implementations.*
 import com.oldguy.jillcess.utilities.DbMetadata
-import com.soywiz.klock.DateTime
-import com.soywiz.klock.Month
+import korlibs.time.DateTime
+import korlibs.time.Month
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

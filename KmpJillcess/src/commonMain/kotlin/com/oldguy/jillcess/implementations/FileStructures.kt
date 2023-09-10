@@ -46,7 +46,7 @@ import com.oldguy.common.io.Buffer
 import com.oldguy.common.io.ByteBuffer
 import com.oldguy.common.io.UByteBuffer
 import com.oldguy.jillcess.get3ByteInt
-import com.soywiz.klock.*
+import korlibs.time.*
 import kotlin.experimental.and
 import kotlin.math.absoluteValue
 

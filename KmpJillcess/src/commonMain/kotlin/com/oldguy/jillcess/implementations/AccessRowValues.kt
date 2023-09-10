@@ -8,7 +8,7 @@ import com.oldguy.common.io.Charset
 import com.oldguy.common.io.UByteBuffer
 import com.oldguy.jillcess.toHexString
 import com.oldguy.jillcess.writeHexString
-import com.soywiz.klock.DateTime
+import korlibs.time.DateTime
 import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.xor
