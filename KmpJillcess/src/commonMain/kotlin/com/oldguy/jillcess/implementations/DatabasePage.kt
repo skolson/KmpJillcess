@@ -1,9 +1,7 @@
 package com.oldguy.jillcess.implementations
 
-import com.oldguy.common.io.ByteBuffer
 import com.oldguy.common.io.UByteBuffer
 import korlibs.time.DateTime
-import kotlin.experimental.xor
 
 /**
  * Every database has a Page 0 (first physical 2K (Jet3) or 4K (Jet4) bytes) that defines the database type/version and other
