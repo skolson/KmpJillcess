@@ -1,5 +1,13 @@
 # Change Log
 
+### 0.1.3
+
+- Kotlin 1.9.22
+- Gradle 8.6
+- Gradle version catalog
+- Use Kotlin default source trees/hierarchy
+- No functional changes
+
 ### 0.1.2
 
 - Kotlin 1.9.10

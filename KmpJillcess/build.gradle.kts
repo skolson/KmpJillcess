@@ -1,47 +1,37 @@
 import org.gradle.kotlin.dsl.signing
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
-    id("com.android.library")
-    kotlin("multiplatform")
-    kotlin("plugin.serialization") version "1.9.10"
+    libs.plugins.also {
+        alias(it.kotlin.multiplatform)
+        alias(it.android.library)
+        alias(it.kotlinx.serialization)
+        alias(it.kotlinx.atomicfu)
+        alias(it.dokka)
+    }
     kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
-    id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.9.0"
-    id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 val mavenArtifactId = "kmp-jillcess"
 val appleFrameworkName = "KmpJillcess"
 group = "com.oldguy"
-version = "0.1.2"
+version = "0.1.3"
 
-val androidMinSdk = 26
-val androidTargetSdkVersion = 34
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.jillcess"
 
-val kotlinCoroutinesVersion = "1.7.3"
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
-val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-
 android {
-    compileSdk = androidTargetSdkVersion
-    buildToolsVersion = "34.0.0"
+    compileSdk = libs.versions.androidSdk.get().toInt()
+    buildToolsVersion = libs.versions.androidBuildTools.get()
     namespace = "com.oldguy.jillcess"
 
-    sourceSets {
-        getByName("main") {
-            manifest.srcFile("src/androidMain/AndroidManifest.xml")
-        }
-    }
-
     defaultConfig {
-        minSdk = androidMinSdk
+        minSdk = libs.versions.androidSdkMinimum.get().toInt()
 
         buildFeatures {
             buildConfig = false
@@ -58,7 +48,7 @@ android {
     }
 
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     packaging.resources.excludes.addAll( listOf(
@@ -66,16 +56,14 @@ android {
     ))
 
     dependencies {
-        testImplementation("junit:junit:4.13.2")
-        androidTestImplementation("androidx.test:core:1.5.0")
-        androidTestImplementation("androidx.test:runner:1.5.2")
-        androidTestImplementation("androidx.test.ext:junit:1.1.5")
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.bundles.androidx.test)
     }
 }
 
 tasks {
     dokkaHtml {
-        moduleName.set("Kotlin Multiplatform Cryptography Library")
+        moduleName.set("Kotlin Multiplatform Access Database File Reader Library")
         dokkaSourceSets {
             named("commonMain") {
                 noAndroidSdkLink.set(false)
@@ -85,11 +73,13 @@ tasks {
     }
 }
 
-val junitVersion = "5.10.0"
-val junit5 = "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-val junit5Runtime = "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-
 kotlin {
+    // Turns off warnings about expect/actual class usage
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     androidTarget {
         publishLibraryVariants("release", "debug")
         mavenPublication {
@@ -146,102 +136,73 @@ kotlin {
     }
     jvm()
 
+    applyDefaultHierarchyTemplate()
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlinCoroutines)
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-                implementation("io.github.skolson:kmp-io:0.1.4")
-                implementation("com.oldguy:kmp-crypto:0.1.4")
-                implementation("com.soywiz.korlibs.klock:klock:4.0.10")
-                implementation("com.ionspin.kotlin:bignum:0.3.8")
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.atomicfu)
+                implementation(libs.kmp.io)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kmp.crypto)
+                implementation(libs.klock)
+                implementation(libs.bignum)
             }
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
-                implementation(kotlinCoroutinesTest)
+                implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
         val androidMain by getting {
-            dependsOn(commonMain)
         }
 
         val androidUnitTest by getting {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
+                implementation(libs.kotlin.test.junit)
+                implementation(libs.junit)
             }
         }
         val androidInstrumentedTest by getting {
-            dependsOn(commonTest)
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
+                implementation(libs.kotlin.test.junit)
+                implementation(libs.junit)
             }
         }
-        val appleNativeMain by creating {
-            dependsOn(commonMain)
-            kotlin.srcDir("src/appleNativeMain/kotlin")
+        val appleMain by getting {
         }
-        val appleNativeTest by creating {
-            kotlin.srcDir("src/appleNativeTest/kotlin")
-            dependsOn(commonTest)
+        val appleTest by getting {
             dependencies {
-                implementation(kotlin("test"))
-                implementation(kotlinCoroutinesTest)
+                implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
         val iosX64Main by getting {
-            dependsOn(appleNativeMain)
         }
         val iosX64Test by getting {
-            dependsOn(appleNativeTest)
         }
         val iosArm64Main by getting {
-            dependsOn(appleNativeMain)
         }
         val macosX64Main by getting {
-            dependsOn(appleNativeMain)
         }
         val macosX64Test by getting {
-            dependsOn(appleNativeTest)
         }
         val jvmMain by getting {
-            dependsOn(commonMain)
             dependencies {
-                implementation("net.sf.kxml:kxml2:2.3.0")
+                implementation(libs.xml.pull.parser)
             }
         }
         val jvmTest by getting {
             dependsOn(commonTest)
             dependencies {
-                implementation(kotlinCoroutinesTest)
-                implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.bouncycastle)
             }
         }
         all {
             languageSettings {
                 optIn("kotlin.ExperimentalUnsignedTypes")
-            }
-        }
-    }
-
-    // workaround starting with Gradle 8 and kotlin 1.8.x, supposedly fixed in Kotlin 1.9.20 (KT-55751)
-    val workaroundAttribute = Attribute.of("com.oldguy.kiscmp", String::class.java)
-    afterEvaluate {
-        configurations {
-            named("debugFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "iosFat")
-            }
-            named("podDebugFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "podIosFat")
-            }
-            named("releaseFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "iosFat")
-            }
-            named("podReleaseFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "podIosFat")
             }
         }
     }
