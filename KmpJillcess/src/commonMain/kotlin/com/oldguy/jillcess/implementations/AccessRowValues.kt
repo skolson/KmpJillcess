@@ -8,7 +8,10 @@ import com.oldguy.common.io.Charset
 import com.oldguy.common.io.UByteBuffer
 import com.oldguy.jillcess.toHexString
 import com.oldguy.jillcess.writeHexString
-import korlibs.time.DateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.xor
@@ -515,8 +518,8 @@ sealed class AccessRowValue<VT>(val type: ValueType) {
      * Maps a double from and to the bytes in the fixed length data portion of the DataRecord
      */
     class DateTimeValue(val endian: Endian) :
-        AccessRowValue<DateTime>(ValueType.DateTimeType) {
-        override var internalValue: DateTime = DateTime.nowLocal().local
+        AccessRowValue<Instant>(ValueType.DateTimeType) {
+        override var internalValue: Instant = Clock.System.now()
 
         constructor(endian: Endian, ascending: Boolean) : this(endian) {
             this.ascending = ascending

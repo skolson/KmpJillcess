@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.1.4
+
+- kotlinx.datetime now used for Instant, LocalDateTime and LocalDate usage. 
+- removed usage and dependency on klock date time library
+- kotlin 1.9.23
+- macosArm64 target added
+
 ### 0.1.3
 
 - Kotlin 1.9.22

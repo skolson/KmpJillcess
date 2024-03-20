@@ -1,9 +1,10 @@
 [versions]
-androidGradlePlugin = "8.4.0-alpha09"
+androidGradlePlugin = "8.5.0-alpha01"
 
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 kotlinCoroutines = "1.8.0-RC2"
 kotlinxAtomicfu = "0.23.2"
+kotlinxDatetime = "0.6.0-RC.2"
 kotlinxSerialization = "1.6.2"
 
 androidBuildTools = "34.0.0"
@@ -11,8 +12,7 @@ androidSdk = "34"
 androidSdkMinimum = "26"
 
 kmpIo = "0.1.6"
-kmpCrypto = "0.1.5"
-klock = "4.0.10"
+kmpCrypto = "0.1.6"
 bignum = "0.3.9"
 xmlPullParser = "2.3.0"
 bouncycastle = "1.70"
@@ -27,11 +27,11 @@ androidxTestExt = "1.1.5"
 [libraries]
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinxAtomicfu" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime"}
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization"}
 
 kmp-io = { module = "io.github.skolson:kmp-io", version.ref = "kmpIo" }
 kmp-crypto = { module = "com.oldguy:kmp-crypto", version.ref = "kmpCrypto" }
-klock = { module = "com.soywiz.korlibs.klock:klock", version.ref = "klock" }
 bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
 xml-pull-parser = { module = "net.sf.kxml:kxml2", version.ref = "xmlPullParser" }
 bouncycastle = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bouncycastle"}

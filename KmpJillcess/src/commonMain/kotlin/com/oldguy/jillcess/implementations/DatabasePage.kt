@@ -1,7 +1,9 @@
 package com.oldguy.jillcess.implementations
 
 import com.oldguy.common.io.UByteBuffer
-import korlibs.time.DateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 
 /**
  * Every database has a Page 0 (first physical 2K (Jet3) or 4K (Jet4) bytes) that defines the database type/version and other
@@ -37,7 +39,7 @@ class DatabasePageStructure(val pageNumber: Int = 0, val password: String = "") 
     private var defaultSortOrder: SortOrder = SortOrder.GeneralSortOrder
     var defaultCodePage: Short = 0
         private set
-    private var creationDate = DateTime.nowLocal().local
+    private var creationDate = Clock.System.now()
     val jetHeader = UByteArray(15)
 
     lateinit var encryption: DatabaseEncryptionStructure

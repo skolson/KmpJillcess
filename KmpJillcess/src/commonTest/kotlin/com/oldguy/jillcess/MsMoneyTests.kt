@@ -22,7 +22,7 @@ class MoneyTests {
                 assertTrue(it.db.isOpen)
                 assertEquals(Jet.Version.Access2000_2002_2003, it.db.jet.version)
                 assertContentEquals(tableNames2001, it.db.tableNameList().sorted())
-                it.verifyCurrencyTable()
+                it.verifyCurrencyTable(1)
             }
         }
     }
@@ -35,7 +35,7 @@ class MoneyTests {
                 assertTrue(it.db.isOpen)
                 assertEquals(Jet.Version.Access2000_2002_2003, it.db.jet.version)
                 assertContentEquals(tableNames2001, it.db.tableNameList().sorted())
-                it.verifyCurrencyTable()
+                it.verifyCurrencyTable(1)
             }
         }
     }
@@ -48,7 +48,7 @@ class MoneyTests {
                 assertTrue(it.db.isOpen)
                 assertEquals(Jet.Version.Access2000_2002_2003, it.db.jet.version)
                 assertContentEquals(tableNames2002(), it.db.tableNameList().sorted())
-                it.verifyCurrencyTable()
+                it.verifyCurrencyTable(2)
             }
         }
     }
@@ -61,7 +61,7 @@ class MoneyTests {
                 assertTrue(it.db.isOpen)
                 assertEquals(Jet.Version.Access2000_2002_2003, it.db.jet.version)
                 assertContentEquals(tableNames2008(), it.db.tableNameList().sorted())
-                it.verifyCurrencyTable(true)
+                it.verifyCurrencyTable(3,true)
             }
         }
     }
@@ -99,7 +99,7 @@ class MoneyTests {
                 assertTrue(it.db.isOpen)
                 assertEquals(Jet.Version.Access2000_2002_2003, it.db.jet.version)
                 assertContentEquals(tableNames2008(), it.db.tableNameList().sorted())
-                it.verifyCurrencyTable(true)
+                it.verifyCurrencyTable(4,true)
             }
         }
     }

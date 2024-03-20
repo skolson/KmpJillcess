@@ -1,7 +1,10 @@
 package com.oldguy.jillcess
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import korlibs.time.DateTime
+import com.oldguy.jillcess.implementations.AccessDateTime
+import kotlinx.datetime.Instant
+import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
 
 enum class ColumnType { String, Byte, Short, Int, Long, Float, Double, Decimal, DateTime, Boolean, Blob, Clob }
 
@@ -30,15 +33,15 @@ class StringValue(isNull: Boolean, value: String, column: Column) :
     }
 }
 
-class DateTimeValue(isNull: Boolean, value: DateTime, column: Column) :
-    RowValue<DateTime>(isNull, value, column) {
+class DateTimeValue(isNull: Boolean, value: Instant, column: Column) :
+    RowValue<Instant>(isNull, value, column) {
 
     override fun toString(): String {
-        return if (isNull) nullString else value.format(formatter)
+        return if (isNull) nullString else formatter.format(value.toLocalDateTime(AccessDateTime.timeZone))
     }
 
     companion object {
-        val formatter = JillcessDateTime.dateTimeFormatter
+        val formatter = AccessDateTime.dateTimeFormatter
     }
 }
 
@@ -274,20 +277,20 @@ class Row : Iterable<RowValue<out Any>> {
         return v ?: throw requireGotNull(columnName)
     }
 
-    fun getDateTime(columnIndex: Int): DateTime? {
+    fun getDateTime(columnIndex: Int): Instant? {
         verifyColumnIndex(columnIndex)
         return getDateTime(rowValues[columnIndex].column.name)
     }
 
-    fun getDateTime(columnName: String): DateTime? {
+    fun getDateTime(columnName: String): Instant? {
         if (isNull(columnName)) return null
         return when (val value = getValue(columnName).value) {
-            is DateTime -> value
-            else -> throw IllegalArgumentException("$columnName is not a LocalDateTime")
+            is Instant -> value
+            else -> throw IllegalArgumentException("$columnName is not a Instant")
         }
     }
 
-    fun requireDateTime(columnName: String): DateTime {
+    fun requireDateTime(columnName: String): Instant {
         return getDateTime(columnName) ?: throw requireGotNull(columnName)
     }
 

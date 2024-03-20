@@ -29,7 +29,7 @@ Access does some stuff this library doesn't support. But it does handle the basi
 - integer types mapped to Int
 - long types mapped to Long
 - decimal types mapped to BigDecimal from the KMP library Bignum from Ionspin
-- date and datetime types mapped to the Klock library
+- date and datetime types mapped to the kotlinx datetime library. Access doesn't have the concept of time zones as far as I know. The library defaults to the system timezone when transforming the float-encoded access date/time into a kotlinx.datetime.LocalDateTime.
 - Blob and Clob columns mapped to ByteArray
 
 Various versions of Access have encryption abilities with various engines, salts, key schemes that change by page number, and other techniques that have morphed over the years, of which this library supports most.
@@ -47,6 +47,7 @@ Various versions of Access have encryption abilities with various engines, salts
 
 - Android X64 and Arm64 ABIs
 - macosX64
+- macosArm64
 - iosX64
 - iosArm64
 - jvm
@@ -55,14 +56,16 @@ Various versions of Access have encryption abilities with various engines, salts
 
 #### Dependencies
 
-- KmpIO (kmp-io 0.1.2) repo is used for all file IO - The random access RawFile, ByteBuffer classes are used extensively. Also BitSet and Base64.
+- KmpIO (kmp-io) repo is used for all file IO - The random access RawFile, ByteBuffer classes are used extensively. Also BitSet and Base64.
 - KmpCrypto (kmp-crypto) is used for the cryptography schemes the various releases of Access have used over the years. (RC4, AES, various Hash algorithms, etc)
 
 #### SourceSets
 
 Almost everything is in commonMain in package com.oldguy.jillcess. There are a bunch of other subdirectories for platform-specific code as they come from a KMP project template. There is only one use case for expect/actual classes, as the Office versions of Access use a small chunk of XML to encode encryption metadata. 
 
-A common source set "appleNativeMain" contains common code used by all three Apple targets. It only contains code for use of an Apple-platform XML parser that is shared across the IOS and Mac targets.
+A common source set "appleMain" contains common code used by all three Apple targets. It only contains code for use of an Apple-platform XML parser that is shared across the IOS and Mac targets.
+
+The default kotlin multiplatform source tree structure is used.
 
 ## Reason for Existence
 
@@ -93,9 +96,7 @@ Define the library as a gradle dependency (assumes mavenLocal is defined as a re
 
 ```
     dependencies {
-        implementation("com.oldguy:kmp-jillcess:0.1.0")
-        implementation("com.oldguy:kmp-io:0.1.2")
-        implementation("com.oldguy:kmp-crypto:0.1.2")
+        implementation("com.oldguy:kmp-jillcess:0.1.4")
     }  
 ```
 
@@ -126,7 +127,7 @@ One pain point on usage requires loading of four resource text files that have c
                 table("CRNC").retrieveAll { rowCount, it ->
                     val key = it.requireInt("hcrnc")                // msmoney often starts key column names with "h" (for handle?)
                     val currencyName = it.requireString("szName")   // use get for nullable columns, require for not nullable    
-                    val dt = it.getDateTime("dtSerial")             // returns a LocalDateTime instance from the Klock library
+                    val dt = it.getDateTime("dtSerial")             // returns a LocalDateTime instance from the kotlinx datetime library
                 }
                 
                 close()
@@ -162,7 +163,7 @@ Notes
 
 - DECIMAL types have precision and scale metadata that are set into the BigDecimal instance. It has full control over rounding and no limits on precision or scale. The Ionspin Bignum KMP library is used for this until such toime as Kotlin has formal BigDecimal and BigInteger support.
 - The NUMBER type in access can be 1,2,4,8, or 16 bytes long
-- LocalDate and LocalDateTime instances are from the Klock library. As of this writing, kotlinx.datetime doesn't yet have full parsing/formatting support. Once it does, that library will be added as a mapping option.
+- LocalDate and LocalDateTime instances are from the kotlinx datetime library. 
 - All types except Boolean are nullable, so the `get` functions get null for null column values, `require` functions don't support null and will throw an exception if used on a null column value.
 
 
@@ -173,3 +174,6 @@ It is fairly easy to add support for new column types, such as the Complex type.
 The library is read-only access. Enabling write access is doable but non-trivial. The object design for the various Page types, Usage Maps, Record types, Index encodings, etc in the Access specification are fairy flexible but also complex, so write access (like Jackcess supports) is work :-)
 
 New release support (like 2019 or later) is also likely easy - complexity in new releases is often related to changes the encryption used, not changes to the legacy Jet stuff that all releases use. If new hash algorithms or encryption engines are introduced, the strategy will be to use (or enhance) the kmp-crypto library so no additional platform-specific code is required.
+
+
+2010-10-30 21:36:58

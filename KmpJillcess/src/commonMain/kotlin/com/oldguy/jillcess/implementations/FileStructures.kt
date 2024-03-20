@@ -16,14 +16,14 @@ package com.oldguy.jillcess.implementations
  * 3 - perform charset decoding into Strings, from the UCS-2 (basically UTF-16LE) encoding used by Accesss, as well as
  * the funky/simple compression scheme used to reduce the disk footprint of UTF-16LE encoded strings
  * 4 - De-codings for all of the supported ValueType instances of row/column values supported by Access
- * 5 - decodings between LocalDateTime instances and Access proprietary/funky timestamp-encoded-in-a-double format
+ * 5 - decodings between Instant instances and Access proprietary/funky timestamp-encoded-in-a-double format
  *
  * See the "implementations" package for classes that use these "file" package classes to build AccessDatabase, AccessTable,
  * and UsageMap classes
  *
  * Long term goals for this package is to make it platform-neutral (iOS, Android, etc:
  *      Convert all ByteBuffer logic from Java (java.nio.ByteBuffer) to Kotlin multi-platform ByteBuffer
- *      Convert all LocalDateTime and BigDecimal to Kotlin native
+ *      Convert all Instant and BigDecimal to Kotlin native
  *
  * Two main class "trees":
  *      Page<> class and subclasses - Access Supports a variety of 2K (Jet3) or 4K (Jet4) page types.  Each type has a
@@ -45,9 +45,19 @@ package com.oldguy.jillcess.implementations
 import com.oldguy.common.io.Buffer
 import com.oldguy.common.io.UByteBuffer
 import com.oldguy.jillcess.get3ByteInt
-import korlibs.time.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.periodUntil
+import kotlinx.datetime.toInstant
 import kotlin.experimental.and
 import kotlin.math.absoluteValue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class AccessDataException(message: String) : Throwable(message)
 
@@ -86,54 +96,6 @@ enum class PageType(val byte: Byte) {
                     throw FileStructureException("Invalid page type: ${byte.toString(16)}")
             }
         }
-    }
-}
-
-object AccessDateTime {
-    private val baseDateTime = DateTime(1899, 12, 30, 0, 0, 0)
-    private const val secondsInDay = 24 * 60 * 60
-
-    /**
-     * Microsoft keeps a funky double value for a LocalDateTime (no time zone info).
-     * Left of decimal is number of days since 1899-12-30, right of decimal is the fraction of
-     * a day that must be converted into hours, minutes and seconds
-     * Assumption evidently is the retrieve time time zone will be the same as the save time time zone
-
-     * @param bytes must be positioned at the start of the date field, which since it is a Double must have 8
-     * bytes available to read as a double.
-     */
-    fun dateFromBytes(bytes: UByteBuffer): DateTime {
-        val work: Double = bytes.double
-        return dateFromDouble(work)
-    }
-
-    /**
-     * Microsoft keeps a funky double value for a LocalDateTime (no time zone info).
-     * Left of decimal is number of days since 1899-12-30, right of decimal is the fraction of
-     * a day that must be converted into hours, minutes and seconds
-     * Assumption evidently is the retrieve time time zone will be the same as the save time time zone
-
-     * @param dateVal date encoded into a double
-     */
-    private fun dateFromDouble(dateVal: Double): DateTime {
-        val days = dateVal.toInt()
-        val dayFraction = (dateVal - days).absoluteValue
-        val seconds = secondsInDay.toDouble() * dayFraction
-        val hours = (seconds / (3600).toDouble()).toInt()
-        val minutes = ((seconds - (hours * 3600).toDouble()) / 60.toDouble()).toInt()
-        val s = (seconds - (hours * 3600).toDouble() - (minutes * 60).toDouble()).toInt()
-        val workDate = if (days < 0) baseDateTime - days.absoluteValue.days
-        else baseDateTime + days.days
-        return workDate + hours.hours + minutes.minutes + s.seconds
-    }
-
-    fun doubleFromDate(_value: DateTime): Double {
-        val days = (baseDateTime until _value).span.days
-        val seconds = (_value.hours * 60 * 60) +
-                (_value.minutes * 60) +
-                _value.seconds
-        val fraction: Double = seconds.toDouble() / secondsInDay.toDouble()
-        return days.toDouble() + fraction
     }
 }
 

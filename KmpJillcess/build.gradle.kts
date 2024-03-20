@@ -115,6 +115,15 @@ kotlin {
             }
         }
     }
+    macosArm64 {
+        binaries {
+            framework {
+                baseName = appleFrameworkName
+                appleXcf.add(this)
+                isStatic = true
+            }
+        }
+    }
     iosX64 {
         binaries {
             framework {
@@ -145,7 +154,7 @@ kotlin {
                 implementation(libs.kmp.io)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kmp.crypto)
-                implementation(libs.klock)
+                implementation(libs.kotlinx.datetime)
                 implementation(libs.bignum)
             }
         }
@@ -187,6 +196,10 @@ kotlin {
         val macosX64Main by getting {
         }
         val macosX64Test by getting {
+        }
+        val macosArm64Main by getting {
+        }
+        val macosArm64Test by getting {
         }
         val jvmMain by getting {
             dependencies {

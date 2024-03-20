@@ -7,11 +7,16 @@ import com.oldguy.jillcess.configuration.JsonConfiguration
 import com.oldguy.jillcess.cryptography.Codec
 import com.oldguy.jillcess.implementations.*
 import com.oldguy.jillcess.utilities.DbMetadata
-import korlibs.time.DateTime
-import korlibs.time.Month
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toLocalDateTime
+import kotlin.math.absoluteValue
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 open class DatabaseTestBaseHelp(
     private val databaseName: String,
@@ -119,7 +124,7 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
         subDir
     )
 {
-    suspend fun verifyCurrencyTable(version2008: Boolean = false) {
+    suspend fun verifyCurrencyTable(moneyVersion: Int, version2008: Boolean = false) {
         val t = db.table("CRNC")
         val cols = listOf(
             "hcrnc",
@@ -149,6 +154,19 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
                     assertEquals(11274, it.getInt("lcid"))
                     assertEquals("ARS", it.getString("szIsoCode"))
                     assertEquals("/ARSUS", it.getString("szSymbol"))
+                    val dtSerial = it.requireDateTime("dtSerial").toLocalDateTime(AccessDateTime.timeZone)
+                    val expected = when (moneyVersion) {
+                        1 -> LocalDateTime(2010, 10, 30, 21, 36, 58)
+                        2 -> LocalDateTime(2011, 7, 6, 22, 9, 42)
+                        3 -> LocalDateTime(2010, 10, 30, 14, 55, 37)
+                        4 -> LocalDateTime(2010, 10, 30, 14, 56, 17)
+                        else ->
+                            throw IllegalArgumentException("Unsupported Money version: $moneyVersion, date: $dtSerial")
+                    }
+                    assertEquals(
+                        expected,
+                        dtSerial
+                    )
                 }
                 2 -> {
                     assertEquals("Australian dollar", it.getString("szName"))
@@ -178,7 +196,6 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
     }
 
     companion object {
-        val largeDate = DateTime(10000, Month.February, 28)
         val validArgentineCurrencyNames =
             listOf("Argentinean peso", "Argentinian peso", "Argentine peso")
         val tableNames2001 = listOf(
