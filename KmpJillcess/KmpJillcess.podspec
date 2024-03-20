@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'KmpJillcess'
-    spec.version                  = '0.1.3'
+    spec.version                  = '0.1.4'
     spec.homepage                 = 'https://github.com/skolson/KmpJillcess'
     spec.source                   = { :http=> ''}
     spec.authors                  = 'Steven Olson'

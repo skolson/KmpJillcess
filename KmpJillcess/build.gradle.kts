@@ -20,7 +20,7 @@ plugins {
 val mavenArtifactId = "kmp-jillcess"
 val appleFrameworkName = "KmpJillcess"
 group = "com.oldguy"
-version = "0.1.3"
+version = "0.1.4"
 
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.jillcess"

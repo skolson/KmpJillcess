@@ -17,7 +17,7 @@ bignum = "0.3.9"
 xmlPullParser = "2.3.0"
 bouncycastle = "1.70"
 
-dokkaPlugin = "1.9.10"
+dokkaPlugin = "1.9.20"
 junit = "4.13.2"
 junit5Version = "5.10.0"
 androidxTest = "1.5.0"
