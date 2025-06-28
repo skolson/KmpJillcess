@@ -1,9 +1,8 @@
 package com.oldguy.jillcess.implementations
 
-import com.oldguy.common.io.ByteBuffer
-import com.oldguy.common.io.Charset
 import com.oldguy.common.io.File
 import com.oldguy.common.io.UByteBuffer
+import com.oldguy.common.io.charsets.Charset
 import com.oldguy.jillcess.Database
 import com.oldguy.jillcess.Row
 import com.oldguy.jillcess.SystemCatalog

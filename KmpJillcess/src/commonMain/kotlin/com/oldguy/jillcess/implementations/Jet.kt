@@ -1,8 +1,10 @@
 package com.oldguy.jillcess.implementations
 
 import com.oldguy.common.io.Buffer
-import com.oldguy.common.io.Charset
-import com.oldguy.common.io.Charsets
+import com.oldguy.common.io.charsets.Charset
+import com.oldguy.common.io.charsets.Iso88591
+import com.oldguy.common.io.charsets.Utf16LE
+import com.oldguy.common.io.charsets.Utf8
 
 enum class PageSize(val size: Int) {
     Version3(2048),
@@ -150,7 +152,7 @@ sealed class Jet(val name: String, var version: Version = Version.Access2007) {
     var sortOrder: SortOrder = SortOrder.GeneralSortOrder
         internal set
 
-    var charset: Charset = Charset(Charsets.Utf16le)
+    var charset: Charset = Utf16LE()
         internal set
 
     val maxCompressedUnicodeSize = 1024
@@ -167,7 +169,7 @@ sealed class Jet(val name: String, var version: Version = Version.Access2007) {
             headerMask.removeAt(headerMask.size - 1)
             headerMask.removeAt(headerMask.size - 1)
             propertyMaskType = propertyMapTypes[0]
-            charset = Charset(Charsets.Iso8859_1)
+            charset = Iso88591()
             sortOrder = SortOrder.LegacySortOrder
         }
     }
@@ -214,7 +216,7 @@ sealed class Jet(val name: String, var version: Version = Version.Access2007) {
     }
 
     companion object {
-        val utf8Charset = Charset(Charsets.Utf8)
+        val utf8Charset = Utf8()
 
         /** known intro bytes for property maps  */
         val propertyMapTypes = arrayOf(

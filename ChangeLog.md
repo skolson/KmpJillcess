@@ -1,6 +1,20 @@
 # Change Log
 
-## 0.1.4
+### 0.1.5
+
+- Kotlin 2.2.0
+- LinuxX64 support using libxml2 cinterop
+- Kotlinx Coroutines 1.10.2 
+- kotlinx Atomicfu 0.28.0
+- kotlinx Datetime = 0.7.0
+- kotlinx Serialization 1.8.1
+- android Build Tools 36.0.0 
+- kmp-io = 0.1.9
+- kmp-crypto 0.1.7
+- bignum 0.3.10
+
+
+### 0.1.4
 
 - kotlinx.datetime now used for Instant, LocalDateTime and LocalDate usage. 
 - removed usage and dependency on klock date time library

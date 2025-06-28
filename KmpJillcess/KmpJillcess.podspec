@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'KmpJillcess'
-    spec.version                  = '0.1.4'
+    spec.version                  = '0.1.5'
     spec.homepage                 = 'https://github.com/skolson/KmpJillcess'
     spec.source                   = { :http=> ''}
     spec.authors                  = 'Steven Olson'
@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'Kotlin Multiplatform Read MS-Access database files'
     spec.vendored_frameworks      = 'build/cocoapods/framework/KmpJillcess.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target = '14'
+    spec.ios.deployment_target    = '14'
                 
                 
     if !Dir.exist?('build/cocoapods/framework/KmpJillcess.framework') || Dir.empty?('build/cocoapods/framework/KmpJillcess.framework')
@@ -17,13 +17,17 @@ Pod::Spec.new do |spec|
         Kotlin framework 'KmpJillcess' doesn't exist yet, so a proper Xcode project can't be generated.
         'pod install' should be executed after running ':generateDummyFramework' Gradle task:
 
-            ./gradlew :KmpJillcess:generateDummyFramework
+            ./gradlew :kmp-jillcess:generateDummyFramework
 
         Alternatively, proper pod installation is performed during Gradle sync in the IDE (if Podfile location is set)"
     end
                 
+    spec.xcconfig = {
+        'ENABLE_USER_SCRIPT_SANDBOXING' => 'NO',
+    }
+                
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':KmpJillcess',
+        'KOTLIN_PROJECT_PATH' => ':kmp-jillcess',
         'PRODUCT_MODULE_NAME' => 'KmpJillcess',
     }
                 

@@ -4,17 +4,16 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import com.oldguy.common.io.ByteBuffer
-import com.oldguy.common.io.Charset
 import com.oldguy.common.io.UByteBuffer
+import com.oldguy.common.io.charsets.Charset
 import com.oldguy.jillcess.toHexString
 import com.oldguy.jillcess.writeHexString
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.xor
+import kotlin.time.ExperimentalTime
 
 class AccessRow : Iterable<AccessRowValue<*>> {
     var rowValues = emptyList<AccessRowValue<*>>().toMutableList()
@@ -59,6 +58,7 @@ class AccessRow : Iterable<AccessRowValue<*>> {
 /**
  * All classes that map individual Access values on a row to/from kotlin data types
  */
+@OptIn(ExperimentalTime::class)
 sealed class AccessRowValue<VT>(val type: ValueType) {
     var isNull: Boolean = false
     val isTextual

@@ -1,7 +1,7 @@
 package com.oldguy.jillcess.implementations
 
 import com.oldguy.common.io.UByteBuffer
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
@@ -13,8 +13,9 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
-@OptIn(FormatStringsInDatetimeFormats::class)
+@OptIn(ExperimentalTime::class, FormatStringsInDatetimeFormats::class)
 object AccessDateTime {
     val timeZone = TimeZone.currentSystemDefault()
     val baseDateTime = LocalDateTime(1899, 12, 30, 0, 0, 0).toInstant(timeZone)

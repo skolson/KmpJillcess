@@ -45,19 +45,7 @@ package com.oldguy.jillcess.implementations
 import com.oldguy.common.io.Buffer
 import com.oldguy.common.io.UByteBuffer
 import com.oldguy.jillcess.get3ByteInt
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
-import kotlinx.datetime.periodUntil
-import kotlinx.datetime.toInstant
 import kotlin.experimental.and
-import kotlin.math.absoluteValue
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 class AccessDataException(message: String) : Throwable(message)
 

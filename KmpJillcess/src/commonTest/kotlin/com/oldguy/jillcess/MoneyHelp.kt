@@ -17,6 +17,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
 
 open class DatabaseTestBaseHelp(
     private val databaseName: String,
@@ -124,6 +125,7 @@ class MoneyTestBaseHelp(fileName: String, password: String = "", subDir: String 
         subDir
     )
 {
+    @OptIn(ExperimentalTime::class)
     suspend fun verifyCurrencyTable(moneyVersion: Int, version2008: Boolean = false) {
         val t = db.table("CRNC")
         val cols = listOf(

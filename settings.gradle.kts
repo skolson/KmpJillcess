@@ -6,6 +6,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = "KmpJillcess"
+val projectNameMavenName = "kmp-jillcess"
+rootProject.name = projectNameMavenName
 
 include(":KmpJillcess")
+project(":KmpJillcess").name = projectNameMavenName

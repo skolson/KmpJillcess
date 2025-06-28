@@ -22,11 +22,10 @@ import kotlinx.serialization.json.Json
 abstract class Configuration protected constructor(
     val configDirectory: File
 ) {
-    protected val configMap: MutableMap<String, String>
+    protected val configMap: MutableMap<String, String> = HashMap()
 
     init {
-        configMap = HashMap()
-        add(TIMEZONE_PROPERTY, TimeZones.getDefaultId())
+        add(TIMEZONE_PROPERTY, TimeZones.default.id)
     }
 
     /**

@@ -1,9 +1,8 @@
 package com.oldguy.jillcess.cryptography
 
 import com.oldguy.common.io.Buffer
-import com.oldguy.common.io.Charset
-import com.oldguy.common.io.Charsets
 import com.oldguy.common.io.UByteBuffer
+import com.oldguy.common.io.charsets.Utf16LE
 import com.oldguy.crypto.*
 import com.oldguy.jillcess.implementations.CryptoAlgorithm
 import com.oldguy.jillcess.implementations.DatabaseEncryptionStructure
@@ -242,7 +241,7 @@ class OfficeRC4Codec constructor(
 ): Codec()
 {
     override val canEncodePartialPage = true
-    private val passwordBytes = Charset(Charsets.Utf16le).encode(password)
+    private val passwordBytes = Utf16LE().encode(password)
     private val baseHash: UByteArray
 
     enum class Phase {
@@ -363,7 +362,7 @@ class AgileCodec(
      */
     init {
         passwordPhaseConfigure()
-        val passwordBytes = Charset(Charsets.Utf16le).encode(password).toUByteArray()
+        val passwordBytes = Utf16LE().encode(password).toUByteArray()
         cipher.key = buildHash(passwordBytes, keyBlock)
         keyValue = cipher.processOne(false, UByteBuffer(pwdEncryptedKey)).getBytes()
         verifyPassword(passwordBytes)

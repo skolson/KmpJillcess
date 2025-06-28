@@ -2,9 +2,9 @@ package com.oldguy.jillcess
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.oldguy.jillcess.implementations.AccessDateTime
-import kotlinx.datetime.Instant
-import kotlinx.datetime.format
+import kotlin.time.Instant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
 enum class ColumnType { String, Byte, Short, Int, Long, Float, Double, Decimal, DateTime, Boolean, Blob, Clob }
 
@@ -33,7 +33,8 @@ class StringValue(isNull: Boolean, value: String, column: Column) :
     }
 }
 
-class DateTimeValue(isNull: Boolean, value: Instant, column: Column) :
+@OptIn(ExperimentalTime::class)
+class DateTimeValue  constructor(isNull: Boolean, value: Instant, column: Column) :
     RowValue<Instant>(isNull, value, column) {
 
     override fun toString(): String {
@@ -106,6 +107,7 @@ class DoubleValue(isNull: Boolean, value: Double, column: Column) :
     }
 }
 
+@OptIn(ExperimentalTime::class)
 class Row : Iterable<RowValue<out Any>> {
     val rowValues = emptyList<RowValue<out Any>>().toMutableList()
     private val nameMap = emptyMap<String, RowValue<out Any>>().toMutableMap()

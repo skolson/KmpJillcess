@@ -1,9 +1,8 @@
 package com.oldguy.jillcess.implementations
 
 import com.oldguy.common.io.BitSet
-import com.oldguy.common.io.ByteBuffer
-import com.oldguy.common.io.Charset
 import com.oldguy.common.io.UByteBuffer
+import com.oldguy.common.io.charsets.Charset
 
 /**
  *

@@ -1,6 +1,6 @@
 package com.oldguy.jillcess.implementations
 
-import com.oldguy.common.io.Charset
+import com.oldguy.common.io.charsets.Charset
 import com.oldguy.jillcess.Column
 import com.oldguy.jillcess.ColumnType
 import com.oldguy.jillcess.Row

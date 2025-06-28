@@ -1,9 +1,8 @@
 package com.oldguy.jillcess.implementations
 
 import com.oldguy.common.io.UByteBuffer
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Every database has a Page 0 (first physical 2K (Jet3) or 4K (Jet4) bytes) that defines the database type/version and other
@@ -26,6 +25,7 @@ import kotlinx.datetime.toInstant
  * handled by a version-specific flavor of DatabaseExncryptionStructure.  The Access version is used to
  * determine which flavor to build
  */
+@OptIn(ExperimentalTime::class)
 class DatabasePageStructure(val pageNumber: Int = 0, val password: String = "") :
     Page<DatabasePageStructure>(PageType.Database) {
     var version: Int = 0

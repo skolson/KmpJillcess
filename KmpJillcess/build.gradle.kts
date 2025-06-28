@@ -3,6 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 
 plugins {
     libs.plugins.also {
@@ -10,25 +12,30 @@ plugins {
         alias(it.android.library)
         alias(it.kotlinx.serialization)
         alias(it.kotlinx.atomicfu)
-        alias(it.dokka)
+        alias(it.dokka.base)
+        alias(it.maven.publish.vannik)
     }
     kotlin("native.cocoapods")
-    id("maven-publish")
-    id("signing")
 }
 
-val mavenArtifactId = "kmp-jillcess"
 val appleFrameworkName = "KmpJillcess"
-group = "com.oldguy"
-version = "0.1.4"
 
 val iosMinSdk = "14"
+val publishDomain = "io.github.skolson"
+val appVersion = libs.versions.appVersion.get()
+
+group = "com.oldguy"
+version = appVersion
+
+val githubUri = "skolson/$appleFrameworkName"
+val githubUrl = "https://github.com/$githubUri"
+
 val kmpPackageName = "com.oldguy.jillcess"
 
 android {
     compileSdk = libs.versions.androidSdk.get().toInt()
     buildToolsVersion = libs.versions.androidBuildTools.get()
-    namespace = "com.oldguy.jillcess"
+    namespace = kmpPackageName
 
     defaultConfig {
         minSdk = libs.versions.androidSdkMinimum.get().toInt()
@@ -60,19 +67,6 @@ android {
         androidTestImplementation(libs.bundles.androidx.test)
     }
 }
-
-tasks {
-    dokkaHtml {
-        moduleName.set("Kotlin Multiplatform Access Database File Reader Library")
-        dokkaSourceSets {
-            named("commonMain") {
-                noAndroidSdkLink.set(false)
-                includes.from("$appleFrameworkName.md")
-            }
-        }
-    }
-}
-
 kotlin {
     // Turns off warnings about expect/actual class usage
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -82,14 +76,10 @@ kotlin {
 
     androidTarget {
         publishLibraryVariants("release", "debug")
-        mavenPublication {
-            artifactId = artifactId.replace(project.name, mavenArtifactId)
-        }
     }
 
-    val githubUri = "skolson/$appleFrameworkName"
-    val githubUrl = "https://github.com/$githubUri"
     cocoapods {
+        name = appleFrameworkName
         ios.deploymentTarget = iosMinSdk
         summary = "Kotlin Multiplatform Read MS-Access database files"
         homepage = githubUrl
@@ -98,7 +88,6 @@ kotlin {
         framework {
             baseName = appleFrameworkName
             isStatic = true
-            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.BitcodeEmbeddingMode.BITCODE)
         }
         // Maps custom Xcode configuration to NativeBuildType
         xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
@@ -127,6 +116,7 @@ kotlin {
     iosX64 {
         binaries {
             framework {
+                baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
                 freeCompilerArgs = freeCompilerArgs + listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
@@ -136,14 +126,30 @@ kotlin {
     iosArm64 {
         binaries {
             framework {
+                baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
-                embedBitcode("bitcode")
                 freeCompilerArgs = freeCompilerArgs + listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
             }
         }
     }
     jvm()
+    linuxX64() {
+        binaries {
+            executable {
+                debuggable = true
+            }
+        }
+        compilations.getByName("main") {
+            val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
+            cinterops {
+                val myLibraryCinterop by creating {
+                    defFile(project.file("$path/libxml2.def"))
+                    includeDirs("/usr/include/libxml2", "/usr/include", "/usr/include/x86_64-linux-gnu")
+                }
+            }
+        }
+    }
 
     applyDefaultHierarchyTemplate()
     sourceSets {
@@ -187,27 +193,12 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
-        val iosX64Main by getting {
-        }
-        val iosX64Test by getting {
-        }
-        val iosArm64Main by getting {
-        }
-        val macosX64Main by getting {
-        }
-        val macosX64Test by getting {
-        }
-        val macosArm64Main by getting {
-        }
-        val macosArm64Test by getting {
-        }
         val jvmMain by getting {
             dependencies {
                 implementation(libs.xml.pull.parser)
             }
         }
         val jvmTest by getting {
-            dependsOn(commonTest)
             dependencies {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.bouncycastle)
@@ -219,44 +210,49 @@ kotlin {
             }
         }
     }
+}
 
-    publishing {
-        publications.withType(MavenPublication::class) {
-            artifactId = artifactId.replace(project.name, mavenArtifactId)
+dokka {
+    moduleName.set("Kotlin Multiplatform Read MS-Access database files Library")
+    dokkaSourceSets.commonMain {
+        includes.from("$appleFrameworkName.md")
+    }
+    dokkaPublications.html {
+        includes.from("$appleFrameworkName.md")
+    }
+}
 
-            // workaround for https://github.com/gradle/gradle/issues/26091
-            val dokkaJar = tasks.register("${this.name}DokkaJar", Jar::class) {
-                group = JavaBasePlugin.DOCUMENTATION_GROUP
-                description = "Dokka builds javadoc jar"
-                archiveClassifier.set("javadoc")
-                from(tasks.named("dokkaHtml"))
-                archiveBaseName.set("${archiveBaseName.get()}-${this.name}")
+mavenPublishing {
+    coordinates(publishDomain, name, appVersion)
+    configure(
+        KotlinMultiplatform(
+            JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+            true,
+            listOf("debug", "release")
+        )
+    )
+
+    pom {
+        name.set("$appleFrameworkName Kotlin Multiplatform Read MS Access database files")
+        description.set("Read only database API for reading MS Access database files. Supported 64 bit platforms; Android, IOS, Windows, Linux, MacOS")
+        url.set(githubUrl)
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
             }
-            artifact(dokkaJar)
-
-            pom {
-                name.set("$appleFrameworkName Kotlin Multiplatform Read MS Access database files")
-                description.set("Read only database API for reading MS Access database files. Supported 64 bit platforms; Android, IOS, Windows, Linux, MacOS")
-                url.set(githubUrl)
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("oldguy")
-                        name.set("Steve Olson")
-                        email.set("skolson5903@gmail.com")
-                    }
-                }
-                scm {
-                    url.set(githubUrl)
-                    connection.set("scm:git:git://git@github.com:${githubUri}.git")
-                    developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
-                }
+        }
+        developers {
+            developer {
+                id.set("oldguy")
+                name.set("Steve Olson")
+                email.set("skolson5903@gmail.com")
             }
+        }
+        scm {
+            url.set(githubUrl)
+            connection.set("scm:git:git://git@github.com:${githubUri}.git")
+            developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
         }
     }
 }
@@ -268,13 +264,4 @@ tasks.withType<Test> {
         showStandardStreams = true
         showStackTraces = true
     }
-}
-
-task("testClasses").doLast {
-    println("testClasses task Iguana workaround for KMP libraries")
-}
-
-signing {
-    isRequired = false
-    sign(publishing.publications)
 }

@@ -1,7 +1,9 @@
 package com.oldguy.jillcess.implementations
 
 import com.oldguy.jillcess.*
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class AccessCursor constructor(
     private val columns: List<Column>,
     private val accessFile: AccessFile
