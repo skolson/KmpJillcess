@@ -45,7 +45,7 @@ actual class OfficeAgile actual constructor() {
                                     throw IllegalStateException("Unexpected child: ${pEncKey.name}, should be p:encryptedKey")
                                 }
                                 ct.keyEncryptor.apply {
-                                    pEncKey.attributes.forEach {
+                                    pEncKey.attributes.values.forEach {
                                         when (it.name) {
                                             "saltSize" -> saltSize = it.value.toInt()
                                             "blockSize" -> blockSize = it.value.toInt()
@@ -83,7 +83,7 @@ actual class OfficeAgile actual constructor() {
     }
 
     fun mapKeyData(node: Node, result: CTEncryption) {
-        node.attributes.forEach {
+        node.attributes.values.forEach {
             when (it.name) {
                 "saltSize" -> result.keyData.saltSize = it.value.toInt()
                 "blockSize" -> result.keyData.blockSize = it.value.toInt()
@@ -99,7 +99,7 @@ actual class OfficeAgile actual constructor() {
     }
 
     fun mapDataIntegrity(node: Node, result: CTEncryption) {
-        node.attributes.forEach {
+        node.attributes.values.forEach {
             when (it.name) {
                 "encryptedHmacKey" -> result.dataIntegrity.encryptedHmacKey =
                     Base64.decodeToBytes(it.value)
@@ -110,7 +110,7 @@ actual class OfficeAgile actual constructor() {
     }
 
     private fun mapNode(nodePtr: CPointer<xmlNode>?): Node {
-        nodePtr ?: return Node("", "", emptyList(), emptyList())
+        nodePtr ?: return Node("", "", emptyMap(), emptyList())
         val pName = nodePtr.pointed.name
             ?: throw IllegalStateException("Parse nodePtr: name is null")
         val pContent = nodePtr.pointed.content
@@ -128,17 +128,17 @@ actual class OfficeAgile actual constructor() {
         )
     }
 
-    private fun map(ptr: CPointer<_xmlAttr>?): List<Attribute> {
-        ptr ?: return emptyList()
-        val result = mutableListOf<Attribute>()
+    private fun map(ptr: CPointer<_xmlAttr>?): Map<String, Attribute> {
+        ptr ?: return emptyMap()
+        val result = mutableMapOf<String, Attribute>()
         var attr = ptr
         while (attr != null) {
-            result.add(
+            val name = mapUBytes(attr.pointed.name)
+            result[name] =
                 Attribute(
-                    mapUBytes(attr.pointed.name),
+                    name,
                     map(attr.pointed.children?.pointed?.content)
                 )
-            )
             attr = attr.pointed.next
         }
         return result

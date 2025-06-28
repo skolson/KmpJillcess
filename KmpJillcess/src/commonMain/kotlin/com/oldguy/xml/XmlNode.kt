@@ -8,7 +8,7 @@ data class Attribute(
 class Node(
     val name: String,
     val value : String,
-    val attributes: List<Attribute>,
+    val attributes: Map<String, Attribute>,
     val children: List<Node>
 ) {
     fun find(name: String): Node? {
@@ -22,11 +22,8 @@ class Node(
         return null
     }
 
-    fun findAttribute(name: String): Attribute? {
-        attributes.forEach {
-            if (it.name == name)
-                return it
-        }
-        return null
+    fun findAttribute(name: String): Attribute?
+    {
+        return attributes[name]
     }
 }
