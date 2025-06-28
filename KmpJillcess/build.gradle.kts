@@ -138,6 +138,8 @@ kotlin {
         binaries {
             executable {
                 debuggable = true
+                linkerOpts.add("-Xlinker")
+                linkerOpts.add("--allow-shlib-undefined")
             }
         }
         compilations.getByName("main") {
