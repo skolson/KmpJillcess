@@ -152,6 +152,24 @@ kotlin {
             }
         }
     }
+    linuxArm64() {
+        binaries {
+            executable {
+                debuggable = true
+                linkerOpts.add("-Xlinker")
+                linkerOpts.add("--allow-shlib-undefined")
+            }
+        }
+        compilations.getByName("main") {
+            val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
+            cinterops {
+                val myLibraryCinterop by creating {
+                    defFile(project.file("$path/libxml2.def"))
+                    includeDirs("/usr/include/libxml2", "/usr/include", "/usr/include/x86_64-linux-gnu")
+                }
+            }
+        }
+    }
 
     applyDefaultHierarchyTemplate()
     sourceSets {
