@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import org.gradle.internal.os.OperatingSystem
 
 plugins {
     libs.plugins.also {
@@ -134,20 +135,48 @@ kotlin {
         }
     }
     jvm()
-    linuxX64() {
-        binaries {
-            executable {
-                debuggable = true
-                linkerOpts.add("-Xlinker")
-                linkerOpts.add("--allow-shlib-undefined")
+    if (OperatingSystem.current().isLinux) {
+        linuxX64() {
+            binaries {
+                executable {
+                    debuggable = true
+                    linkerOpts.add("-Xlinker")
+                    linkerOpts.add("--allow-shlib-undefined")
+                }
+            }
+            compilations.getByName("main") {
+                val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
+                cinterops {
+                    val myLibraryCinterop by creating {
+                        defFile(project.file("$path/libxml2.def"))
+                        includeDirs(
+                            "/usr/include/libxml2",
+                            "/usr/include",
+                            "/usr/include/x86_64-linux-gnu"
+                        )
+                    }
+                }
             }
         }
-        compilations.getByName("main") {
-            val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
-            cinterops {
-                val myLibraryCinterop by creating {
-                    defFile(project.file("$path/libxml2.def"))
-                    includeDirs("/usr/include/libxml2", "/usr/include", "/usr/include/x86_64-linux-gnu")
+        linuxArm64() {
+            binaries {
+                executable {
+                    debuggable = true
+                    linkerOpts.add("-Xlinker")
+                    linkerOpts.add("--allow-shlib-undefined")
+                }
+            }
+            compilations.getByName("main") {
+                val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
+                cinterops {
+                    val myLibraryCinterop by creating {
+                        defFile(project.file("$path/libxml2.def"))
+                        includeDirs(
+                            "/usr/include/libxml2",
+                            "/usr/include",
+                            "/usr/include/x86_64-linux-gnu"
+                        )
+                    }
                 }
             }
         }

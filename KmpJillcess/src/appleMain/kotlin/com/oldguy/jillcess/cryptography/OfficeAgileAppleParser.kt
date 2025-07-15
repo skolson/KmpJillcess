@@ -1,4 +1,4 @@
-package com.oldguy.jillcess
+package com.oldguy.jillcess.cryptography
 
 import com.oldguy.common.io.Base64
 import com.oldguy.jillcess.cryptography.CTEncryption
