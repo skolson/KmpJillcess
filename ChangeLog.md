@@ -1,17 +1,18 @@
 # Change Log
 
-### 0.1.5
+### 0.1.5 (2025-07-15)
 
 - Kotlin 2.2.0
 - LinuxX64 support using libxml2 cinterop
 - Kotlinx Coroutines 1.10.2 
-- kotlinx Atomicfu 0.28.0
-- kotlinx Datetime = 0.7.0
-- kotlinx Serialization 1.8.1
+- kotlinx atomicfu 0.29.0
+- kotlinx Datetime = 0.7.1
+- kotlinx Serialization 1.9.0
 - android Build Tools 36.0.0 
-- kmp-io = 0.1.9
+- kmp-io = 0.2.2
 - kmp-crypto 0.1.7
 - bignum 0.3.10
+- linuxArm64
 
 
 ### 0.1.4
