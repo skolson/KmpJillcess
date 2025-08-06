@@ -9,10 +9,12 @@
 - kotlinx Datetime = 0.7.1
 - kotlinx Serialization 1.9.0
 - android Build Tools 36.0.0 
-- kmp-io = 0.2.2
+- kmp-io = 0.2.3
 - kmp-crypto 0.1.7
 - bignum 0.3.10
 - linuxArm64
+- iosSimulatorArm64
+- Gradle 9.0.0
 
 
 ### 0.1.4

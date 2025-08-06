@@ -134,6 +134,16 @@ kotlin {
             }
         }
     }
+    iosSimulatorArm64 {
+        binaries {
+            framework {
+                baseName = appleFrameworkName
+                appleXcf.add(this)
+                isStatic = true
+                freeCompilerArgs = freeCompilerArgs + listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
+            }
+        }
+    }
     jvm()
     if (OperatingSystem.current().isLinux) {
         linuxX64() {

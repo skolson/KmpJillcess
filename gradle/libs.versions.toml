@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.12.0-alpha09"
+androidGradlePlugin = "8.13.0-alpha03"
 appVersion = "0.1.5"
 
 kotlin = "2.2.0"
@@ -12,20 +12,20 @@ androidBuildTools = "36.0.0"
 androidSdk = "36"
 androidSdkMinimum = "26"
 
-kmpIo = "0.2.2"
+kmpIo = "0.2.3"
 kmpCrypto = "0.1.7"
 bignum = "0.3.10"
 xmlPullParser = "2.3.0"
 bouncycastle = "1.81"
 
 dokkaPlugin = "2.0.0"
-vannikTech = "0.33.0"
+vannikTech = "0.34.0"
 
 junit = "4.13.2"
-junit5Version = "5.13.3"
-androidxTest = "1.6.1"
-androidxTestRunner = "1.6.2"
-androidxTestExt = "1.2.1"
+junit5Version = "5.13.4"
+androidxTest = "1.7.0"
+androidxTestRunner = "1.7.0"
+androidxTestExt = "1.3.0"
 
 [libraries]
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinxAtomicfu" }
