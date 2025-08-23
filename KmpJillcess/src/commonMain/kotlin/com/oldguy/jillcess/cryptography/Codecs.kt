@@ -345,7 +345,7 @@ class AgileCodec(
     private val agile = OfficeAgile()
     private var keyValue = UByteArray(0)
     private val encodingKey = officeEncryption.encodingKey
-    private val ctEncryption = agile.parseXml(officeEncryption.agileXml)
+    private val ctEncryption = agile.parseXml(officeEncryption.agileXmlBytes)
     private val pageKeySaltValue = ctEncryption.keyData.saltValue.toUByteArray()
     private var saltValue = UByteArray(0)
     private lateinit var digest: ExtendedDigest

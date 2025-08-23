@@ -1,5 +1,0 @@
-package = com.oldguy.jillcess.cryptography
-headers = libxml/parser.h
-headerFilter = libxml/*
-libraryPaths = /usr/lib/x86_64-linux-gnu/
-linkerOpts.linux = --allow-shlib-undefined --dy -L/usr/lib/x86_64-linux-gnu -lxml2 -licui18n -licuuc -licudata -lz -llzma -lpthread

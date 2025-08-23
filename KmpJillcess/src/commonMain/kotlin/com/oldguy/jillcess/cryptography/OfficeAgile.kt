@@ -1,5 +1,12 @@
 package com.oldguy.jillcess.cryptography
 
+import com.oldguy.common.io.Base64
+import com.oldguy.common.io.TextBuffer
+import com.oldguy.common.io.charsets.Utf8
+import com.oldguy.markup.XmlParser
+import com.oldguy.markup.model.Node
+import kotlinx.coroutines.runBlocking
+
 /**
  * These classes are derived from schemas published by Microsoft for Office 2006
  * https://docs.microsoft.com/en-us/openspecs/office_file_formats/ms-offcrypto/87020a34-e73f-4139-99bc-bbdf6cf6fa55
@@ -136,6 +143,83 @@ class CTEncryption {
     }
 }
 
-expect class OfficeAgile() {
-    fun parseXml(xml: String): CTEncryption
+class OfficeAgile() {
+    fun parseXml(xml: ByteArray): CTEncryption {
+        var c = 0
+        XmlParser(
+            TextBuffer(Utf8(), 1024) { bytes, count ->
+                if (c++ == 0) {
+                    xml.copyInto(bytes, 0, 0, count)
+                    xml.size.toUInt()
+                } else 0u
+            }
+        ).apply {
+            domParser = true
+            pullParser = false
+            runBlocking {
+                parse { _, _ -> true }
+            }
+            return document.root?.let {
+                transform(it)
+            } ?: throw IllegalStateException("No encryption root node found by parser")
+        }
+    }
+
+    fun transform(root: Node): CTEncryption {
+        val ct = CTEncryption()
+        root.traverse { parent, node ->
+            when (node.name) {
+                "keyData" -> {
+                    CTKeyData().apply {
+                        ct.keyData = this
+                        saltSize = node.attribute("saltSize")?.value?.toInt() ?: 0
+                        blockSize = node.attribute("blockSize")?.value?.toInt() ?: 0
+                        keyBits = node.attribute("keyBits")?.value?.toInt() ?: 0
+                        hashSize = node.attribute("hashSize")?.value?.toInt() ?: 0
+                        cipherAlgorithm = node.attribute("cipherAlgorithm")?.value ?: ""
+                        cipherChaining = node.attribute("cipherChaining")?.value ?: ""
+                        hashAlgorithm = node.attribute("hashAlgorithm")?.value ?: ""
+                        saltValue = Base64.decodeToBytes(node.attribute("saltValue")?.value ?: "")
+                    }
+                }
+                "keyEncryptors" -> {
+                    ct.keyEncryptors = CTKeyEncryptors()
+                }
+                "keyEncryptor" -> {
+                    ct.keyEncryptors.encryptorList.add(
+                        CTKeyEncryptor(node.attribute("uri")?.value ?: "")
+                    )
+                }
+                "p:encryptedKey" -> {
+                    CTPasswordKeyEncryptor().apply {
+                        ct.keyEncryptors.encryptorList[0].keyEncryptor = this
+                        spinCount = node.attribute("spinCount")?.value?.toInt() ?: 0
+                        saltSize = node.attribute("saltSize")?.value?.toInt() ?: 0
+                        blockSize = node.attribute("blockSize")?.value?.toInt() ?: 0
+                        keyBits = node.attribute("keyBits")?.value?.toInt() ?: 0
+                        hashSize = node.attribute("hashSize")?.value?.toInt() ?: 0
+                        cipherAlgorithm = node.attribute("cipherAlgorithm")?.value ?: ""
+                        cipherChaining = node.attribute("cipherChaining")?.value ?: ""
+                        hashAlgorithm = node.attribute("hashAlgorithm")?.value ?: ""
+                        saltValue = Base64.decodeToBytes(
+                            node.attribute("saltValue")?.value ?: ""
+                        ).toUByteArray()
+                        encryptedVerifierHashInput = Base64.decodeToBytes(
+                            node.attribute("encryptedVerifierHashInput")?.value ?: ""
+                        ).toUByteArray()
+                        encryptedVerifierHashValue = Base64.decodeToBytes(
+                            node.attribute("encryptedVerifierHashValue")?.value ?: ""
+                        ).toUByteArray()
+                        encryptedKeyValue = Base64.decodeToBytes(
+                            node.attribute("encryptedKeyValue")?.value ?: ""
+                        ).toUByteArray()
+                    }
+                }
+                else -> {
+                    throw IllegalStateException("Unexpected node: ${node.name}")
+                }
+            }
+        }
+        return ct
+    }
 }

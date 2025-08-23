@@ -145,49 +145,17 @@ kotlin {
         }
     }
     jvm()
-    if (OperatingSystem.current().isLinux) {
-        linuxX64() {
-            binaries {
-                executable {
-                    debuggable = true
-                    linkerOpts.add("-Xlinker")
-                    linkerOpts.add("--allow-shlib-undefined")
-                }
-            }
-            compilations.getByName("main") {
-                val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
-                cinterops {
-                    val myLibraryCinterop by creating {
-                        defFile(project.file("$path/libxml2.def"))
-                        includeDirs(
-                            "/usr/include/libxml2",
-                            "/usr/include",
-                            "/usr/include/x86_64-linux-gnu"
-                        )
-                    }
-                }
+    linuxX64() {
+        binaries {
+            executable {
+                debuggable = true
             }
         }
-        linuxArm64() {
-            binaries {
-                executable {
-                    debuggable = true
-                    linkerOpts.add("-Xlinker")
-                    linkerOpts.add("--allow-shlib-undefined")
-                }
-            }
-            compilations.getByName("main") {
-                val path = "${project.rootDir}/$appleFrameworkName/src/linuxMain/cinterop"
-                cinterops {
-                    val myLibraryCinterop by creating {
-                        defFile(project.file("$path/libxml2.def"))
-                        includeDirs(
-                            "/usr/include/libxml2",
-                            "/usr/include",
-                            "/usr/include/x86_64-linux-gnu"
-                        )
-                    }
-                }
+    }
+    linuxArm64() {
+        binaries {
+            executable {
+                debuggable = true
             }
         }
     }
@@ -199,8 +167,9 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.atomicfu)
                 implementation(libs.kmp.io)
-                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kmp.markup)
                 implementation(libs.kmp.crypto)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.bignum)
             }
@@ -235,9 +204,6 @@ kotlin {
             }
         }
         val jvmMain by getting {
-            dependencies {
-                implementation(libs.xml.pull.parser)
-            }
         }
         val jvmTest by getting {
             dependencies {

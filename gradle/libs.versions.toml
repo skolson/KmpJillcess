@@ -1,8 +1,8 @@
 [versions]
-androidGradlePlugin = "8.13.0-alpha03"
-appVersion = "0.1.5"
+androidGradlePlugin = "9.0.0-alpha02"
+appVersion = "0.1.6"
 
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 kotlinCoroutines = "1.10.2"
 kotlinxAtomicfu = "0.29.0"
 kotlinxDatetime = "0.7.1"
@@ -12,10 +12,10 @@ androidBuildTools = "36.0.0"
 androidSdk = "36"
 androidSdkMinimum = "26"
 
-kmpIo = "0.2.3"
+kmpIo = "0.3.0"
 kmpCrypto = "0.1.7"
+kmpMarkup = "0.1.0"
 bignum = "0.3.10"
-xmlPullParser = "2.3.0"
 bouncycastle = "1.81"
 
 dokkaPlugin = "2.0.0"
@@ -34,9 +34,9 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization"}
 
 kmp-io = { module = "io.github.skolson:kmp-io", version.ref = "kmpIo" }
+kmp-markup = { module = "io.github.skolson:kmp-markup", version.ref = "kmpMarkup" }
 kmp-crypto = { module = "io.github.skolson:kmp-crypto", version.ref = "kmpCrypto" }
 bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
-xml-pull-parser = { module = "net.sf.kxml:kxml2", version.ref = "xmlPullParser" }
 bouncycastle = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle"}
 
 #build only
