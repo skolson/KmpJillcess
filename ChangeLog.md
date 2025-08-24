@@ -4,6 +4,7 @@
 
 - Kotlin 2.2.10
 - Remove use of libxml2, java kxml2. Replace XML requirement with kmp-markup library on all platforms
+- kmp-io 0.3.0
 
 ### 0.1.5 (2025-07-15)
 
