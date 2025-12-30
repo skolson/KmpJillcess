@@ -16,7 +16,7 @@ This library was fun to make and taught me more than I ever wanted to know about
 
 Almost all of the code required in this library is Kotlin, with very little usage of expect/actual classes with platform-specific code. The exceptions to this are:
 
-- XML parsing. Later versions of Access actually have an encryption-related XML snippet in page zero that must be parsed.  Android, JVM targets use the old-but-good java XML Pull parser. Apple platforms use Apple's XML pull parser.
+- XML parsing. Later versions of Access actually have an encryption-related XML snippet in page zero that must be parsed.  In versions 0.1.5 and earlier the Android, JVM and Apple targets used platform-specific XML parsers, but starting with 0.1.6 this is converted to kmp-markup, which is the same parser implementation across all platforms, also including linux natives.
 - Dependency on kmp-io for platform-specific file operations.
 - Dependency on kmp-crypto, which has platform-specific implementations of SecureRandom.
 
