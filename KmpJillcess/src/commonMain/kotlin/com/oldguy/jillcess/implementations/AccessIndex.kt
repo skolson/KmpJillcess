@@ -64,7 +64,6 @@ class AccessIndex(private val accessTable: AccessTable, indexStruct: AllIndexStr
         val indexPage = IndexNodePage(accessTable.isVersion4)
             .parse(accessTable.accessFile.readPage(pageNumber))
         var rc = true
-        // System.out.println("Page $pageNumber, leaf ${indexPage.isLeaf}, entries ${indexPage.records.size}")
         for (entry in indexPage.records) {
             if (!indexPage.isLeaf) {
                 search(entry.childPage, row)

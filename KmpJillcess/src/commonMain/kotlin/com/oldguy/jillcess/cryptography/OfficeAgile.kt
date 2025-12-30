@@ -147,9 +147,9 @@ class OfficeAgile() {
     fun parseXml(xml: ByteArray): CTEncryption {
         var c = 0
         XmlParser(
-            TextBuffer(Utf8(), 1024) { bytes, count ->
+            TextBuffer(Utf8(), xml.size) { bytes, _ ->
                 if (c++ == 0) {
-                    xml.copyInto(bytes, 0, 0, count)
+                    xml.copyInto(bytes, 0, 0, xml.size)
                     xml.size.toUInt()
                 } else 0u
             }
@@ -167,8 +167,9 @@ class OfficeAgile() {
 
     fun transform(root: Node): CTEncryption {
         val ct = CTEncryption()
-        root.traverse { parent, node ->
+        root.traverse { _, node ->
             when (node.name) {
+                "encryption" -> {}
                 "keyData" -> {
                     CTKeyData().apply {
                         ct.keyData = this
