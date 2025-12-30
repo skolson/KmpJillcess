@@ -11,9 +11,10 @@ buildscript {
 plugins {
     libs.plugins.also {
         alias(it.kotlin.multiplatform) apply false
-        alias(it.android.library) apply false
+        alias(it.android.kmp.library) apply false
         alias(it.kotlinx.atomicfu) apply false
         alias(it.kotlinx.serialization) apply false
+        alias(it.kotlin.cocoapods) apply false
     }
 }
 
@@ -22,5 +23,8 @@ allprojects {
         google()
         mavenCentral()
         mavenLocal()
+        maven {
+            url = uri("https://central.sonatype.com/repository/maven-snapshots/")
+        }
     }
 }

@@ -2,8 +2,15 @@
 
 ### 0.1.6 (in progress)
 
-- Kotlin 2.2.10
+- Kotlin 2.3.0
+- Gradle 9.2.1
 - Remove use of libxml2, java kxml2. Replace XML requirement with kmp-markup library on all platforms
+- android Build Tools 36.1.0
+- kmp-io = 0.3.0-SNAPSHOT
+- AGP 9.1.0-alpha01
+- Android Gradle Library Plugin for KMP replacing deprecated Android Library Plugin
+    - This required renaming the android testing source sets to the new convention
+    - Android release builds isMinifyEnabled (proguard) is now true
 
 ### 0.1.5 (2025-07-15)
 

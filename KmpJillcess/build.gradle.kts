@@ -10,20 +10,20 @@ import org.gradle.internal.os.OperatingSystem
 plugins {
     libs.plugins.also {
         alias(it.kotlin.multiplatform)
-        alias(it.android.library)
+        alias(it.android.kmp.library)
         alias(it.kotlinx.serialization)
         alias(it.kotlinx.atomicfu)
         alias(it.dokka.base)
         alias(it.maven.publish.vannik)
+        alias(it.kotlin.cocoapods)
     }
-    kotlin("native.cocoapods")
 }
 
 val appleFrameworkName = "KmpJillcess"
 
 val iosMinSdk = "14"
 val publishDomain = "io.github.skolson"
-val appVersion = libs.versions.appVersion.get()
+val appVersion: String = libs.versions.appVersion.get()
 
 group = "com.oldguy"
 version = appVersion
@@ -33,41 +33,6 @@ val githubUrl = "https://github.com/$githubUri"
 
 val kmpPackageName = "com.oldguy.jillcess"
 
-android {
-    compileSdk = libs.versions.androidSdk.get().toInt()
-    buildToolsVersion = libs.versions.androidBuildTools.get()
-    namespace = kmpPackageName
-
-    defaultConfig {
-        minSdk = libs.versions.androidSdkMinimum.get().toInt()
-
-        buildFeatures {
-            buildConfig = false
-        }
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("tools/consumer-rules.pro")
-    }
-
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-
-    compileOptions {
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    packaging.resources.excludes.addAll( listOf(
-        "META-INF/versions/9/*"
-    ))
-
-    dependencies {
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.bundles.androidx.test)
-    }
-}
 kotlin {
     // Turns off warnings about expect/actual class usage
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -75,8 +40,23 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    androidTarget {
-        publishLibraryVariants("release", "debug")
+    android {
+        compileSdk = libs.versions.androidSdk.get().toInt()
+        buildToolsVersion = libs.versions.androidBuildTools.get()
+        namespace = kmpPackageName
+
+        minSdk = libs.versions.androidSdkMinimum.get().toInt()
+
+        withHostTest {}
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            execution = "HOST"
+        }
+
+        optimization {
+            consumerKeepRules.publish = true
+            consumerKeepRules.files.add(project.file("proguard-rules.pro"))
+        }
     }
 
     cocoapods {
@@ -96,73 +76,26 @@ kotlin {
     }
 
     val appleXcf = XCFramework()
-    macosX64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-            }
-        }
-    }
-    macosArm64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-            }
-        }
-    }
-    iosX64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-                freeCompilerArgs = freeCompilerArgs + listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
-            }
-        }
-    }
-    iosArm64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-                freeCompilerArgs = freeCompilerArgs + listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
-            }
-        }
-    }
-    iosSimulatorArm64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
+    listOf(
+        macosX64(), macosArm64(), iosX64(), iosArm64(), iosSimulatorArm64()
+    ).forEach {
+        val name = it.name
+        it.binaries.framework {
+            baseName = appleFrameworkName
+            appleXcf.add(this)
+            isStatic = true
+            if (name.contains("ios")) {
                 freeCompilerArgs = freeCompilerArgs + listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
             }
         }
     }
     jvm()
-    linuxX64() {
-        binaries {
-            executable {
-                debuggable = true
-            }
-        }
-    }
-    linuxArm64() {
-        binaries {
-            executable {
-                debuggable = true
-            }
-        }
-    }
+    linuxX64()
+    linuxArm64()
 
     applyDefaultHierarchyTemplate()
     sourceSets {
-        val commonMain by getting {
+        getByName("commonMain") {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.atomicfu)
@@ -174,38 +107,32 @@ kotlin {
                 implementation(libs.bignum)
             }
         }
-        val commonTest by getting {
+        getByName("commonTest") {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
             }
-        }
-        val androidMain by getting {
         }
 
-        val androidUnitTest by getting {
+        getByName("androidHostTest") {
             dependencies {
                 implementation(libs.kotlin.test.junit)
                 implementation(libs.junit)
             }
         }
-        val androidInstrumentedTest by getting {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(libs.kotlin.test.junit)
                 implementation(libs.junit)
             }
         }
-        val appleMain by getting {
-        }
-        val appleTest by getting {
+        getByName("appleTest") {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
-        val jvmMain by getting {
-        }
-        val jvmTest by getting {
+        getByName("jvmTest") {
             dependencies {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.bouncycastle)
@@ -234,8 +161,7 @@ mavenPublishing {
     configure(
         KotlinMultiplatform(
             JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
-            true,
-            listOf("debug", "release")
+            true
         )
     )
 
@@ -261,14 +187,5 @@ mavenPublishing {
             connection.set("scm:git:git://git@github.com:${githubUri}.git")
             developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
         }
-    }
-}
-
-tasks.withType<Test> {
-    testLogging {
-        events("PASSED", "FAILED", "SKIPPED")
-        exceptionFormat = TestExceptionFormat.FULL
-        showStandardStreams = true
-        showStackTraces = true
     }
 }
